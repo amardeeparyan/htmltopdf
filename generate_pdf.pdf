@@ -1,0 +1,101 @@
+<?php
+error_reporting(1);
+ini_set("display_errors", 1);
+require_once('tcpdf/config/lang/eng.php');
+require_once('tcpdf/tcpdf.php');
+
+
+// Extend the TCPDF class to create custom Header and Footer
+/*
+class MYPDF extends TCPDF {
+	//Page header
+	public function Header() {
+		// get the current page break margin
+		$bMargin = $this->getBreakMargin();
+		// get current auto-page-break mode
+		$auto_page_break = $this->AutoPageBreak;
+		// disable auto-page-break
+		$this->SetAutoPageBreak(false, 0);
+		$this->setPageFormat($format='A4',$orientation ='P');
+		// set bacground image
+		$this->SetMargins($left, $top=10, $right, $keepmargins=false);
+		$img_file = BASEPATHS.'/images/bg.png';
+		$this->Image($img_file, 0, 0, 200, 257, '', '', '', false, 300, '', false, false, 0);
+		$this->SetHeaderData(BASEPATHS."/images/logo.png", 0,'', '');
+		// restore auto-page-break status
+		
+		$this->SetAutoPageBreak($auto_page_break, $bMargin);
+		// set the starting point for the page content
+		$this->setPageMark();
+	}
+	public function Footer() {
+		// Position at 15 mm from bottom
+		$this->SetY(-15);
+		// Set font
+		$this->SetFont('helvetica', 'I', 8);
+		// Page number
+		$this->Cell(0, 10, 'SDIBSL No.: 010 '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+	}
+}
+*/
+
+
+$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+//$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+$pdf->SetCreator(PDF_CREATOR);
+
+// Set Header and footer
+//$pdf->SetHeaderData(BASEPATHS."/images/logo.png", 0,'', '');
+
+//$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+//$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+//set margins
+$pdf->SetMargins(30, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+//set auto page breaks
+$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+//set image scale factor
+$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+//set some language-dependent strings
+$pdf->setLanguageArray($l);
+
+
+
+//$pdf->SetFont('helvetica', '', 10);
+
+$pdf->AddPage();
+
+$html = '
+
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>letterhead design</title>
+		
+		</head>
+		
+		<body>
+		  test html content
+		</body>
+		</html>
+		
+';
+
+
+// Print text using writeHTMLCell()
+//$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
+$pdf->writeHTML($html, true, false, true, false, '');
+
+$pdf->lastPage();
+
+$pdf->Output("testpdf.pdf", 'F');
+header("location:testpdf.pdf");
+?>
